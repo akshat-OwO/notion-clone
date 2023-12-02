@@ -1,6 +1,8 @@
 "use client";
 
+import { api } from "@/convex/_generated/api";
 import { cn } from "@/lib/utils";
+import { useQuery } from "convex/react";
 import { ChevronsLeft, MenuIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import React, { ElementRef, FC, useEffect, useRef, useState } from "react";
@@ -12,6 +14,7 @@ interface NavigationProps {}
 const Navigation: FC<NavigationProps> = ({}) => {
     const pathname = usePathname();
     const isMobile = useMediaQuery("(max-width: 768px)");
+    const documents = useQuery(api.documents.get);
 
     const isResizingRef = useRef(false);
     const sidebarRef = useRef<ElementRef<"aside">>(null);
@@ -121,7 +124,9 @@ const Navigation: FC<NavigationProps> = ({}) => {
                     <UserItem />
                 </div>
                 <div className="mt-4">
-                    <p>Documents</p>
+                    {documents?.map((document) => (
+                        <p key={document._id}>{document.title}</p>
+                    ))}
                 </div>
                 <div
                     onMouseDown={handleMouseDown}
