@@ -6,6 +6,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { api } from "@/convex/_generated/api";
+import { useSearch } from "@/hooks/use-search";
 import { cn } from "@/lib/utils";
 import { useMutation } from "convex/react";
 import {
@@ -29,6 +30,7 @@ import UserItem from "./UserItem";
 interface NavigationProps {}
 
 const Navigation: FC<NavigationProps> = ({}) => {
+    const search = useSearch();
     const pathname = usePathname();
     const isMobile = useMediaQuery("(max-width: 768px)");
     const create = useMutation(api.documents.create);
@@ -153,7 +155,7 @@ const Navigation: FC<NavigationProps> = ({}) => {
                         label="Search"
                         icon={Search}
                         isSearch
-                        onClick={() => {}}
+                        onClick={search.onOpen}
                     />
                     <Item label="Settings" icon={Settings} onClick={() => {}} />
                     <Item

@@ -1,5 +1,6 @@
 "use client";
 
+import SearchCommand from "@/components/SearchCommand";
 import { Spinner } from "@/components/Spinner";
 import { useConvexAuth } from "convex/react";
 import { redirect } from "next/navigation";
@@ -25,12 +26,15 @@ const Layout: FC<LayoutProps> = ({ children }) => {
         return redirect("/");
     }
 
-    return <div className="h-full flex dark:bg-[#1F1F1f]">
-        <Navigation />
-        <main className="flex-1 h-full overflow-y-auto">
-            {children}
-        </main>
-    </div>;
+    return (
+        <div className="h-full flex dark:bg-[#1F1F1f]">
+            <Navigation />
+            <main className="flex-1 h-full overflow-y-auto">
+                <SearchCommand />
+                {children}
+            </main>
+        </div>
+    );
 };
 
 export default Layout;
