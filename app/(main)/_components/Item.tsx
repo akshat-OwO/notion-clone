@@ -1,16 +1,26 @@
 "use client";
 
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
+import { useUser } from "@clerk/clerk-react";
 import { useMutation } from "convex/react";
 import {
     ChevronDown,
     ChevronRight,
     LucideIcon,
+    MoreHorizontal,
     Plus,
     Router,
+    Trash,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -41,8 +51,11 @@ const Item = ({
     level = 0,
     onExpand,
 }: ItemProps) => {
+    const { user } = useUser();
+
     const router = useRouter();
     const create = useMutation(api.documents.create);
+    const archive = useMutation(api.documents.archive);
 
     const ChevronIcon = expanded ? ChevronDown : ChevronRight;
 
@@ -69,6 +82,18 @@ const Item = ({
             loading: "Creating a new note...",
             success: "New note Created!",
             error: "Failed to create a new note",
+        });
+    };
+
+    const onArchive = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        event.stopPropagation();
+        if (!id) return;
+        const promise = archive({ id });
+
+        toast.promise(promise, {
+            loading: "Moving to trash...",
+            success: "Note moved to trash",
+            error: "Failed to archive note.",
         });
     };
 
@@ -103,13 +128,43 @@ const Item = ({
                 </kbd>
             )}
             {!!id && (
-                <div
-                    role="button"
-                    onClick={onCreate}
-                    className="ml-auto flex items-center gap-x-2"
-                >
-                    <div className="opacity-0 group-hover:opacity-100 h-full ml-auto rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600">
-                        <Plus className="h-4 w-4 text-muted-foreground" />
+                <div className="ml-auto flex items-center gap-x-2">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger
+                            onClick={(e) => e.stopPropagation()}
+                            asChild
+                        >
+                            <div
+                                role="button"
+                                className="opacity-0 group-hover:opacity-100 h-full ml-auto rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600"
+                            >
+                                <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                            </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                            className="w-16"
+                            align="start"
+                            side="right"
+                            forceMount
+                        >
+                            <DropdownMenuItem onClick={onArchive}>
+                                <Trash className="h-4 w-4 mr-2" />
+                                Delete
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <div className="text-xs text-muted-foreground p-2">
+                                Last edited by: {user?.fullName}
+                            </div>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <div
+                        role="button"
+                        onClick={onCreate}
+                        className="ml-auto flex items-center gap-x-2"
+                    >
+                        <div className="opacity-0 group-hover:opacity-100 h-full ml-auto rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600">
+                            <Plus className="h-4 w-4 text-muted-foreground" />
+                        </div>
                     </div>
                 </div>
             )}
