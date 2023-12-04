@@ -1,6 +1,7 @@
 "use client";
 
 import { FC, useEffect, useState } from "react";
+import CoverImageModal from "../modals/CoverImageModal";
 import SettingsModal from "../modals/SettingsModal";
 
 interface ModalProviderProps {}
@@ -17,6 +18,7 @@ const ModalProvider: FC<ModalProviderProps> = ({}) => {
     return (
         <>
             <SettingsModal />
+            <CoverImageModal />
         </>
     );
 };
